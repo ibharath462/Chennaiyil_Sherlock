@@ -1,0 +1,310 @@
+  <!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+  <link rel="stylesheet" href="../css/materialize.css">
+  <link rel='stylesheet prefetch' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="../css/custom_card.css">
+  <link rel="stylesheet" href="../css/login.css">
+  <link rel="stylesheet" href="../css/content.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="../js/materialize.js"></script>
+  <script type="text/javascript"
+  src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <script type="text/javascript" src="../js/qrcode.js"></script>
+  <script src="https://apis.google.com/js/platform.js?onload=onLoadCallback" async defer></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="shortcut icon" href="">
+ <link rel="stylesheet" href="http://anijs.github.io/lib/anicollection/anicollection.css">
+
+
+     <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+
+</head>
+<body>
+
+  
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=265048987037745";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+
+  <div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+       <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+        <ul class="left">
+          <li><a href="http://www.annauniv.edu" target="_blank"><img class="circle" src="../images/ceg.png" height="50" width="50" style="margin-top: 5px;"></a></li>
+          <li><a href="http://www.fb.com/cegecea" target="_blank"><img class="circle" src="../images/ecea.png" height="50" width="50" style="margin-top: 5px;"></a></li>
+          <li><strong><a href="../index.html">Vision'17</a></strong></li>
+        </ul>
+        <ul class="right hide-on-med-and-down waves-effect">
+          <li><a href="http://visionceg.in/inner/events.html"><strong>Events</strong></a></li>
+          <li><a href="http://visionceg.in/inner/workshop.html"><strong>Workshops</strong></a></li>
+          <li><a href="#" onclick="soon();"><strong>Hospitality</strong></a></li>
+          <li><a href="http://visionceg.in/inner/contacts.html"><strong>Contact</strong></a></li>
+          <li><a href="http://visionceg.in/inner/va.html"><strong>Student Ambassador</strong></a></li>
+          <li><a href="#" onclick="soon();"><strong>Sponsors</strong></a></li>
+          <li><a id="login"><strong></strong></a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <ul id="slide-out" class="side-nav">
+    <li><div class="userView">
+      <div class="background">
+        
+      </div>
+      <center><div id="qrcode"></div></center>
+      <h4 id="v17UserName">Please Login</h4>
+    </div></li>
+    <div class="divider"></div>
+    <li class="no-padding">
+      <ul class="collapsible collapsible-accordion">
+         <li class="bold"><a class="collapsible-header waves-effect waves-teal">Events<i class="material-icons">arrow_drop_down</i></a>
+         <div class="collapsible-body">
+          <ul>
+           <li><a href="http://visionceg.in/inner/technical.html">Technical</a></li>
+            <li><a href="http://visionceg.in/inner/general.html">General</a></li>
+            <li><a href="http://visionceg.in/inner/online.html">Online</a></li>
+            <div class="divider"></div>
+          </ul>
+        </div>
+        </li>
+      </ul>
+    </li>
+    <li class="no-padding">
+      <ul class="collapsible collapsible-accordion">
+       <li class="bold"><a class="collapsible-header waves-effect waves-teal">Workshops  <i class="material-icons">arrow_drop_down</i></a>
+         <div class="collapsible-body">
+          <ul>
+            
+
+            <li><a href="bw.html">Brainwave controlled robotics</a></li>
+            <li><a href="ti.html">TI MSP430</a></li>
+            <div class="divider"></div>
+            
+          </ul>
+        </div>
+        </li>
+      </ul>
+    </li>
+   <li><a class="waves-effect waves-effect waves-teal" href="http://visionceg.in/inner/profile.html">Profile</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="#login" id="navLogin">Login</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="#!" onclick="soon();">Sponsors</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://visionceg.in/inner/va.html">Student Ambassador</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://visionceg.in/inner/hospitality.html">Hospitality</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://visionceg.in/inner/contacts.html">Contact</a></li>
+    <div class="divider"></div>
+     <li>
+      <div class="fb-like" data-href="https://www.facebook.com/visionceg" data-layout="standard" data-action="like" data-size="small" data-show-faces="true"></div>
+      <div class="fb-share-button" data-href="http://visionceg.in" data-layout="button_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvisionceg.in%2F&amp;src=sdkpreparse">Share</a></div>
+    </li>
+
+  </ul>
+
+  <div class="container">
+    
+  
+
+
+  <div class="row"> 
+    <div class="col s12 l12">
+      <center><b><h3>Vision'17 Registration</h3></b></center>
+      <hr>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="input-field col s6 l6">
+          <i class="material-icons prefix">account_circle</i>
+          <input disabled id="v17Name" type="text" class="validate">
+          <label for="icon_prefix">Name</label>
+      </div>
+
+      <div class="input-field col s6 l6">
+          <i class="material-icons prefix">vpn_key</i>
+          <input disabled id="v17Id" type="text" class="validate">
+          <label for="icon_prefix">V!Id</label>
+      </div>
+
+
+  </div>
+
+   <div class="row">
+      <div class="input-field col s6 l6">
+          <i class="material-icons prefix">email</i>
+          <input disabled id="v17Email" type="text" class="validate">
+          <label for="icon_prefix">Email</label>
+      </div>
+
+    <div class="row">
+      <div class="input-field col s6 l6">
+          <i class="material-icons prefix">perm_phone_msg</i>
+          <input id="v17Mobile" type="text" class="validate">
+          <label for="icon_prefix">Mobile</label>
+      </div>
+    
+    </div>
+    </div>
+
+  <div class="row"> 
+    <div class="input-field col s12 l12">
+      <input id="v17Colleges" type="text" class="validate tooltipped"  data-position="bottom" data-delay="50" data-tooltip="Fill me if your college is not in the list and choose 'Others' from the above list.">
+      <label for="icon_prefix">College name</label>
+      <label>College</label>
+    </div>
+  </div>
+
+  <div class="row"> 
+
+    <div class="input-field col s12 l12">
+      <select id="v17Year">
+        <option>First</option>
+        <option>Second</option>
+        <option>Third</option>
+        <option>Fourth</option>
+        <option>Fifth</option>
+      </select>
+      <label>Year</label>
+    </div>
+  </div>
+
+   <div class="row"> 
+   <div class="input-field col s12 l6">
+      <select id="v17Department">
+        <option>ECE</option>
+        <option>EEE</option>
+        <option>CSE</option>
+        <option>IT</option>
+        <option>Mechanical</option>
+        <option>Bio Medical</option>
+        <option>Civil</option>
+        <option>Aeronautical</option>
+        <option>Mechatronics</option>
+        <option>Instrumentation Engineering</option>
+        <option>Robotics</option>
+      </select>
+      <label>Department</label>
+    </div>
+    <div class="input-field col s12 l6">
+          <i class="material-icons prefix">payment</i>
+          <input id="v17SA" type="text" class="validate tooltipped" data-position="bottom" data-delay="50" data-tooltip="Fill in the Vision Referral ID of the friend who directed to you to Vision(Optional)">
+          <label for="icon_prefix">Referral</label>
+    </div>
+  </div>
+
+  <div class="row"> 
+    <div class="col s5"></div>
+    <div class="col l6 s12">
+      <a class="waves-effect waves-light btn" id="v17Submit">Submit<i class="material-icons right">done</i></a>
+    </div>
+  </div>
+
+  </div>
+
+
+  
+<footer class="page-footer">
+          <div class="container">
+            <div class="row">
+              <div class="col l6 s12">
+                <h5 class="red-text">Vision 17</h5>
+                <p class="grey-text text-lighten-4">VISION , the national level technical extravaganza which is the estuary of technical brains all over India is all set to raise your pulses in the scorching month of March. The prize money boasting around 4 lakhs and with the gush of adrenaline remaining all time high,VISION has already carved its own panache in the minds of the engineers.</p>
+                <a href="http://www.fb.com/visionceg" target="_blank">Facebook</a>
+              </div>
+              <div class="col l6 s12">
+                <h5 class="red-text">ECEA</h5>
+                <p class="grey-text text-lighten-4">The biggest asset of our department is the presence of the ECE Association which works round the clock to make our dept bigger and better. ECEA functions mainly as a student organisation comprising around 1000 student members and headed by our beloved HOD Dr.S.Muttan. ECEA's prime activities include staging RESONANCE, an intra-college technical event and VISION, an inter-college technical symposium and other activities include conducting various workshops and seminars through which we sculpt our young engineer's mind according to their will.</p>
+                <a href="http://www.fb.com/cegecea" target="_blank">Facebook</a>
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+              ©2017 Web & Tech team ECEA
+            </div>
+          </div>
+</footer>
+
+<script type='text/javascript'>var fc_JS=document.createElement('script');fc_JS.type='text/javascript';fc_JS.src='https://assets1.freshchat.io/production/assets/widget.js?t='+Date.now();(document.body?document.body:document.getElementsByTagName('head')[0]).appendChild(fc_JS); window._fcWidgetCode='VXO8M8NORL';window._fcURL='https://ibharath462.freshchat.io';</script>
+
+</body>
+</html>
+
+
+  <!-- AniJS Core File -->
+<script src="../js/anijs.js"></script>
+
+<!-- ScrollReveal Helper -->
+<script src="../js/anijs-helper-scrollreveal.js"></script>
+
+<script type="text/javascript">
+
+  if(!$.cookie("v17Register")){
+    Materialize.toast('You have already registered, please goto profile page :-)', 5000, 'rounded');
+    window.location = "/";
+  }
+  $(".button-collapse").sideNav();
+  Materialize.toast('Welcome ' + $.cookie("v17Name"), 5000, 'rounded');
+  $("#v17Id").val($.cookie("v17Id"));
+  $("#v17Name").val($.cookie("v17Name"));
+  $("#v17Email").val($.cookie("v17Mail"));
+  var toAppend = '';
+  $('#v17Submit').click( function() {
+    if($("#v17Mobile").val() === "" || $("#v17Mobile").val().length<10 || !($.isNumeric($("#v17Mobile").val())) || $("#v17Mobile").val().length>10){
+      Materialize.toast('Please enter your mobile number ' + $.cookie("v17User") + " , we wont spam you :-)", 5000, 'rounded');
+    }
+    else{
+      var userDetails = new Object();
+      userDetails.v17Mobile = $("#v17Mobile").val();
+      userDetails.v17SA = $("#v17SA").val();
+      userDetails.v17Name = $.cookie("v17Name");
+      userDetails.v17Image = $.cookie("v17Image");
+      userDetails.v17Id = $.cookie("v17Id");
+      userDetails.v17Mail = $.cookie("v17Mail");
+      userDetails.v17College = $("#v17Colleges").val();
+      userDetails.v17Year = $("#v17Year").val();
+      userDetails.v17Department = $("#v17Department").val();
+      userDetails.v17CollegeOther = "None";
+      userDetails.v17SA = $("#v17SA").val();
+      if(userDetails.v17SA==""){
+        userDetails.v17SA = "VNONE";
+      }
+      if(userDetails.v17CollegeOther == ""){
+        userDetails.v17CollegeOther = "Other";
+      }
+      userDetails = JSON.stringify(userDetails);
+      console.log(userDetails);
+      $.post( "../php/register.php",{registrationDetails : userDetails},function(data){
+          if(data == "Inserted"){
+            Materialize.toast('Registration complete ' + $.cookie("v17Name") + ':-)', 5000, 'rounded');
+            $.post( "../php/cs.php",{ registerUser : "true"},function(data){
+
+                window.location = "http://sherlock.visionceg.in/game.html";
+
+            });
+          }
+      });
+    }
+  });
+
+    function soon(){
+      Materialize.toast('Will be updated soon :-)', 5000, 'rounded');
+    }
+
+    $('select').material_select();
+
+
+  Materialize.toast('Please complete the registration ' + $.cookie("v17Name"), 5000, 'rounded');
+</script>
+

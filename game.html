@@ -1,0 +1,697 @@
+  <!DOCTYPE html>
+<html>
+<head>
+
+  <title>Vision'17</title>
+  <link rel="stylesheet" href="css/materialize.css">
+  <link rel='stylesheet prefetch' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="css/login.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="js/materialize.js"></script>
+  <script type="text/javascript"
+  src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <script type="text/javascript" src="js/qrcode.js"></script>
+  <script src="https://apis.google.com/js/platform.js?onload=onLoadCallback" async defer></script>
+   <style type="text/css">
+    nav{
+      background-color: #212121;
+      opacity: 0.4;
+    }
+  </style>
+  <script>
+
+    $.post( "php/cs.php",{ isCorrectLevel: 0},function(data){
+
+      if(data == "Error"){
+        window.location = "http://sherlock.visionceg.in";
+      }
+
+    });
+
+  function onLoadCallback(){
+    gapi.load('auth2', function(){
+      auth2 = gapi.auth2.init({
+        client_id: '265641923111-2k0798sfrr872m70lagbr612jj4mle63.apps.googleusercontent.com',
+        cookiepolicy: 'single_host_origin',
+        'scope': 'profile email'
+      });
+      attachSignin(document.getElementById('glogin'));
+    });
+  }
+  </script>
+  <script type="text/javascript">
+
+
+    var googleUser = {};
+
+    function attachSignin(element) {
+    auth2.attachClickHandler(element, {},
+        function(googleUser) {
+            checkOAuthedUser(googleUser);
+        }, function(error) {
+          alert(JSON.stringify(error, undefined, 2));
+        });
+    }
+
+    function checkOAuthedUser(googleUser){
+      document.getElementById("userName").value=googleUser.getBasicProfile().getName();
+      document.getElementById("userMail").value=googleUser.getBasicProfile().getEmail();
+      $("#dummyName").css("visibility","hidden");
+      $("#dummyMail").css("visibility","hidden");
+      $("#glogin").text("{Please wait....}");
+      $.ajax({
+      'url' : 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token='+googleUser.getAuthResponse().id_token,
+      'type' : 'GET',
+      'success' : function(data) {
+          if(data.aud == "265641923111-2k0798sfrr872m70lagbr612jj4mle63.apps.googleusercontent.com"){
+            
+            checkExistingUser(googleUser);
+          }
+          else{
+            alert("Access denied");
+          }
+      },
+      'error' : function(data){
+        alert(data);
+      }
+    });
+    }
+
+
+    function checkExistingUser(googleUser){
+      $.post( "php/register.php",{ userMail: googleUser.getBasicProfile().getEmail()},function(data){
+          
+          var parsed = JSON.parse(data);
+          if(parsed.result == "RegisteredAlready"){
+            $("#showLogin").css('visibility','hidden');
+            $("#others").removeClass('othersBlurred');
+            $("#login").text("Logout");
+            Materialize.toast('Welcome back '+googleUser.getBasicProfile().getName(), 5000, 'rounded');
+            $("#login").attr("onclick","glogout()");
+            $("#navLogin").attr("onclick", "glogout()");
+            $("#navLogin").text("Logout");
+            $.cookie("v17Name", googleUser.getBasicProfile().getName(), { path: '/' });
+            $.cookie("v17Mail", googleUser.getBasicProfile().getEmail(), { path: '/' });
+            $.cookie("v17Image", googleUser.getBasicProfile().getImageUrl(), { path: '/' });
+            $.post( "php/cs.php",{ registerUser : "true"},function(data){
+
+              alert(data);
+
+            });
+          }
+          else{
+            $.post( "php/register.php",{ v17setCookie: "true"},function(data){
+              $.cookie("v17Name", googleUser.getBasicProfile().getName(), { path: '/' });
+              $.cookie("v17Mail", googleUser.getBasicProfile().getEmail(), { path: '/' });
+              $.cookie("v17Image", googleUser.getBasicProfile().getImageUrl(), { path: '/' });
+              $.cookie("v17Register","true", { path: '/' });
+              window.location = "inner/register.html";
+            });
+          }
+          console.log(data);
+      });
+  }
+
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="shortcut icon" href="">
+ <link rel="stylesheet" href="http://anijs.github.io/lib/anicollection/anicollection.css">
+
+
+     <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+
+</head>
+<body bgcolor="#bab8b8">
+
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=265048987037745";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+
+  <object data="sound.wav" type="video/quicktime" width="0" height="0">
+    <param name="filename" value="a.wav">
+    <param name="autostart" value="1">
+    <param name="playcount" value="true"> 
+</object>
+
+ 
+
+  <div id="others">
+
+
+  <div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+
+        <ul class="left">
+          <li><a href="http://www.annauniv.edu" target="_blank"><img class="circle" src="images/ceg.png" height="50" width="50" style="margin-top: 5px;"></a></li>
+          <li><a href="http://www.fb.com/cegecea" target="_blank"><img class="circle" src="images/ecea.png" height="50" width="50" style="margin-top: 5px;"></a></li>
+          <li><strong><a href="/">Vision'17</a></strong></li>
+        </ul>
+         <ul class="right hide-on-med-and-down waves-effect">
+          <li><a id="login"><strong></strong></a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+
+
+
+  <ul id="slide-out" class="side-nav">
+    <li><div class="userView">
+      <div class="background">
+        
+      </div>
+      <center><div id="qrcode"></div></center>
+      <h4 id="v17UserName">Please Login</h4>
+    </div></li>
+    <div class="divider"></div>
+    <li class="no-padding">
+      <ul class="collapsible collapsible-accordion">
+        <li class="bold"><a class="collapsible-header waves-effect waves-teal">Events<i class="material-icons">arrow_drop_down</i></a>
+         <div class="collapsible-body">
+          <ul>
+            <li><a href="http://www.visionceg.in/inner/technical.html" target="_blank">Technical</a></li>
+            <li><a href="http://www.visionceg.in/inner/general.html" target="_blank">General</a></li>
+            <li><a href="http://www.visionceg.in/inner/online.html" target="_blank">Online</a></li>
+            <div class="divider"></div>
+          </ul>
+        </div>
+        </li>
+      </ul>
+    </li>
+    <li class="no-padding">
+      <ul class="collapsible collapsible-accordion">
+        <li class="bold"><a class="collapsible-header waves-effect waves-teal">Workshops<i class="material-icons">arrow_drop_down</i></a>
+         <div class="collapsible-body">
+          <ul>
+            
+            <li><a href="http://www.visionceg.in/inner/bw.html" target="_blank">Brainwave controlled robotics</a></li>
+            <li><a href="http://www.visionceg.in/inner/ti.html" target="_blank">TI MSP430</a></li>
+            <div class="divider"></div>
+
+          </ul>
+        </div>
+        </li>
+      </ul>
+    </li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/profile.html" target="_blank">Profile</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="#login" id="navLogin">Login</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="#!" onclick="soon();">Sponsors</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/va.html" target="_blank">Student Ambassador</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/hospitality.html" target="_blank">Hospitality</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/contacts.html" target="_blank">Contact</a></li>
+    <div class="divider"></div>
+    <li>
+      <div class="fb-like" data-href="https://www.facebook.com/visionceg" data-layout="standard" data-action="like" data-size="small" data-show-faces="true"></div>
+      <div class="fb-share-button" data-href="http://visionceg.in" data-layout="button_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvisionceg.in%2F&amp;src=sdkpreparse">Share</a></div>
+    </li>
+
+  </ul>
+
+  <div id="preloader" class="img-responsive"></div>
+
+  <div class="container">
+
+
+
+  <div class="slider fullscreen">
+    <ul class="slides">
+      <li>
+        <img src="images/sherlock/asd.jpg"> <!-- random image -->
+      </li>
+      <li>
+        <img src="images/sherlock/tre.jpg"> <!-- random image -->
+      </li>
+      <li>
+        <img src="images/sherlock/gfd.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">Masseur John, Masseur</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/qds.jpg"> <!-- random image -->
+        <div class="caption left-align">
+          <h3>John Watson:</h3>
+          <h5 class="light grey-text text-lighten-3">Mas....How could you possibly say that?</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/ngu.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">Victims cheek and his flat tyres. Obvious isnt ?</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/ngu.png"> <!-- random image -->
+        <div class="caption left-align">
+          <h3>John Watson:</h3>
+          <h5 class="light grey-text text-lighten-3">Obvious !!! ya....</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/hju.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">My  mind revolts against the idleness its now on .</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/nbn.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">All I need is a nice little murder. Is that too much to ask?</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/jkl.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">Dont put that in your blog...</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/fdg.jpg"> <!-- random image -->
+
+      </li>
+      <li>
+        <img src="images/sherlock/yui.png"> <!-- random image -->
+      </li>
+      <li>
+        <img src="images/sherlock/fff.png"> <!-- random image -->
+      </li>
+      <li>
+        <img src="images/sherlock/xxx.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">Queen and Country needs me again?</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/frt.png"> <!-- random image -->
+        <div class="caption center-align">
+          <h3>Agent:</h3>
+          <h5 class="light grey-text text-lighten-3">This time....</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/frt.png"> <!-- random image -->
+        <div class="caption center-align">
+          <h3>Agent:</h3>
+          <h5 class="light grey-text text-lighten-3">Its India.</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/jjj.png"> <!-- random image -->
+        <div class="caption left-align">
+          <h3>John Watson:</h3>
+          <h5 class="light grey-text text-lighten-3">Why? What happened?</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/sss.png"> <!-- random image -->
+        <div class="caption center-align">
+          <h3>Agent:</h3>
+          <h5 class="light grey-text text-lighten-3">The Ambassador was killed in india.</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/sherlock/hgg.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">You have highly functional people for that.</h5>
+        </div>
+      </li>
+
+      <li>
+        <img src="images/sherlock/dtu.jpg"> <!-- random image -->
+      </li>
+
+      <li>
+        <img src="images/sherlock/cds.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">oh... Marvelous</h5>
+        </div>
+      </li>
+
+       <li>
+        <img src="images/sherlock/cds.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">wait outside.</h5>
+        </div>
+      </li>
+
+
+      <li>
+        <img src="images/sherlock/20.png"> <!-- random image -->
+      </li>
+
+      <li>
+        <img src="images/sherlock/21.png"> <!-- random image -->
+      </li>
+
+      <li>
+        <img src="images/sherlock/22.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">YES, YES!!! Its Christmas , John</h5>
+        </div>
+      </li>
+
+       <li>
+        <img src="images/sherlock/23.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">You ready?</h5>
+        </div>
+      </li>
+
+      <li>
+        <img src="images/sherlock/23.png"> <!-- random image -->
+        <div class="caption right-align">
+          <h3>Sherlock:</h3>
+          <h5 class="light grey-text text-lighten-3">Because in India THE GAME IS ON.</h5>
+        </div>
+      </li>
+
+      <li>
+        <img src="images/sherlock/23.png"> <!-- random image -->
+        <div class="row">
+          <div class=" col s6 l3"></div>
+          <div class="col s6 l6">
+            <div class="caption center-align">
+                <a class="waves-effect waves-light btn" onclick="submit();">Lets GO!</a>
+            </div>
+          </div> 
+        </div>
+      </li>
+
+
+    </ul>
+  </div>
+
+
+    
+  </div>
+
+ 
+       </div>
+       <div id="showLogin">
+
+  <div class="materialContainer">
+
+
+   <div class="box">
+
+      <div class="title">LOGIN</div>
+
+      <div class="input">
+         <label for="name" id="dummyName" style="{visibility: hidden;}">Name</label>
+         <input type="text" name="name" id="userName" disabled="true">
+         <span class="spin"></span>
+      </div>
+
+      <div class="input">
+         <label for="pass" id="dummyMail" style="{visibility: hidden;}">Email</label>
+         <input type="text" name="pass" id="userMail" disabled="true">
+         <span class="spin"></span>
+      </div>
+
+      <div class="button login">
+         <button id="glogin"><span style="color: black">Sign in with Google</span> <i class="fa fa-check"></i></button>
+      </div>
+
+      <a href="" class="pass-forgot">Close</a>
+
+   </div>
+
+   <div class="overbox">
+      <div class="alt-2"><span class="shape"></span></div>
+   </div>
+
+</div>
+</div>
+
+
+
+  <script type='text/javascript'>var fc_JS=document.createElement('script');fc_JS.type='text/javascript';fc_JS.src='https://assets1.freshchat.io/production/assets/widget.js?t='+Date.now();(document.body?document.body:document.getElementsByTagName('head')[0]).appendChild(fc_JS); window._fcWidgetCode='VXO8M8NORL';window._fcURL='https://ibharath462.freshchat.io';</script>
+
+
+</body>
+
+
+<script type="text/javascript">
+
+
+  if($.cookie("v17Register") && $.cookie("v17Register")=="true"){
+    Materialize.toast('Please register first :-)', 5000, 'rounded');
+    window.location = "inner/register.html";
+  }
+
+  function soon(){
+    Materialize.toast('Will be updated soon :-)', 5000, 'rounded');
+  }
+
+  $(document).ready(function(){
+      $('.parallax').parallax();
+      var audioElement = document.createElement('audio');
+      audioElement.setAttribute('src', 'a.mp3');
+      audioElement.play();
+  });
+
+
+  function submit(){
+
+
+
+    $('#preloader').fadeIn();
+
+
+    $.post( "php/cs.php",{go : "check"},function(data){
+       
+        window.location = "inner/level1a.html";
+         
+    });
+
+  }
+
+
+  
+    var qrcode = new QRCode("qrcode", {
+      text: $.cookie("v17Id"),
+      width: 128,
+      height: 128,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+
+    $(window).load(function(){
+      $('#preloader').fadeOut();
+      $('.slider').slider();
+    });
+
+
+    $.post( "php/register.php",{isLoggedIn : "check"},function(data){
+       
+      data = JSON.parse(data);
+      console.log(data);
+      if(data.result == "true"){
+        $("#login").text("Logout");
+        $("#login").attr("onclick","glogout()");
+        $("#navLogin").text("Logout");
+        $("#navLogin").attr("onclick", "glogout()");
+        $("#v17UserName").html("Welcome " + $.cookie("v17Name"));
+        
+      }
+      else{
+        $("#login").text("Login");
+        $("#login").attr("onclick","");
+        $("#qrcode").html("<img class='img-responsive' src='images/def.jpg' height='100' width='100'></img>");
+      }
+         
+    });
+
+
+    $(".button-collapse").sideNav();
+    //$('.button-collapse').sideNav('show');
+
+    $(function() {
+        $('.material-card > .mc-btn-action , .material-card > .bottom_click').click(function () {
+            var card = $(this).parent('.material-card');
+            var icon = $(this).parent('.material-card').children('.mc-btn-action').children('i');
+            icon.addClass('fa-spin-fast');
+
+            if (card.hasClass('mc-active')) {
+                card.removeClass('mc-active');
+
+                window.setTimeout(function() {
+                    icon
+                        .removeClass('fa-arrow-left')
+                        .removeClass('fa-spin-fast')
+                        .addClass('fa-bars');
+
+                }, 800);
+            } else {
+                card.addClass('mc-active');
+
+                window.setTimeout(function() {
+                    icon
+                        .removeClass('fa-bars')
+                        .removeClass('fa-spin-fast')
+                        .addClass('fa-arrow-left');
+
+                }, 800);
+            }
+        });
+    });
+
+ 
+   
+    $(function() {
+
+   $(".input input").focus(function() {
+
+      $(this).parent(".input").each(function() {
+         $("label", this).css({
+            "line-height": "18px",
+            "font-size": "18px",
+            "font-weight": "100",
+            "top": "0px"
+         })
+         $(".spin", this).css({
+            "width": "100%"
+         })
+      });
+   }).blur(function() {
+      $(".spin").css({
+         "width": "0px"
+      })
+      if ($(this).val() == "") {
+         $(this).parent(".input").each(function() {
+            $("label", this).css({
+               "line-height": "60px",
+               "font-size": "24px",
+               "font-weight": "300",
+               "top": "10px"
+            })
+         });
+
+      }
+   });
+
+
+
+   $(".button").click(function(e) {
+      var pX = e.pageX,
+         pY = e.pageY,
+         oX = parseInt($(this).offset().left),
+         oY = parseInt($(this).offset().top);
+
+      $(this).append('<span class="click-efect x-' + oX + ' y-' + oY + '" style="margin-left:' + (pX - oX) + 'px;margin-top:' + (pY - oY) + 'px;"></span>')
+      $('.x-' + oX + '.y-' + oY + '').animate({
+         "width": "500px",
+         "height": "500px",
+         "top": "-250px",
+         "left": "-250px",
+
+      }, 600);
+   })
+
+   
+  
+
+});
+   
+
+  $("#login").click(function(){
+
+
+        $.post( "php/register.php",{isLoggedIn : "check"},function(data){
+
+          data = JSON.parse(data)
+          if(data.result == "false"){
+            $("#showLogin").css('visibility','visible');
+            $("#others").addClass('othersBlurred');
+            $("#dummyName").css("visibility","visible");
+            $("#dummyMail").css("visibility","visible");          
+            document.body.scrollTop = document.documentElement.scrollTop = 0; 
+
+          }
+          else{
+            Materialize.toast('A logged session already exists :-)', 5000, 'rounded');
+          }
+
+        });
+  });
+
+
+
+  
+
+
+  
+
+  function glogout(){
+
+      
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        alert("Logged out");
+        $("#showLogin").css('visibility','hidden');
+        $("#login").text("Login");
+        $("#login").attr("onclick","");
+        $("#navLogin").text("Login");
+        //For side nav...
+        $("#navLogin").attr("onclick", "");
+        document.getElementById("userName").value="";
+        document.getElementById("userMail").value="";
+        $("#glogin").text("Sign in with Google");
+        $.post( "php/register.php",{param : "gSignOut"},function(data){
+          alert(data);
+          window.location="http://sherlock.visionceg.in"
+        });
+      });
+  }
+
+   $('a[href="#login"]').click(function(){
+
+      $('.button-collapse').sideNav('hide');
+      $.post( "php/register.php",{isLoggedIn : "check"},function(data){
+
+          data = JSON.parse(data)
+          if(data.result == "false"){
+            $("#showLogin").css('visibility','visible');
+            $("#others").addClass('othersBlurred');
+            $("#navLogin").text("Logout");
+            $("#navLogin").attr("onclick", "glogout()");
+            $("#dummyName").css("visibility","visible");
+            $("#dummyMail").css("visibility","visible");          
+            document.body.scrollTop = document.documentElement.scrollTop = 0; 
+          }
+          else{
+            Materialize.toast('A logged session already exists :-)', 5000, 'rounded');
+          }
+
+        });
+   });
+
+
+
+
+</script>
+</html>

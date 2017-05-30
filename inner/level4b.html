@@ -1,0 +1,884 @@
+  <!DOCTYPE html>
+<html>
+<head>
+
+  <title>Vision'17</title>
+  <link rel="stylesheet" href="../css/materialize.css">
+  <link rel="stylesheet" href="../css/events.css">
+  <link rel="stylesheet" href="../css/content.css">
+  <link rel='stylesheet prefetch' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="../css/login.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="../js/materialize.js"></script>
+  <script type="text/javascript"
+  src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <script type="text/javascript" src="../js/qrcode.js"></script>
+  <script src="https://apis.google.com/js/platform.js?onload=onLoadCallback" async defer></script>
+   <style type="text/css">
+    nav{
+      background-color: #212121;
+    }
+  </style>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
+  <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+  <script>
+
+  function onLoadCallback(){
+    gapi.load('auth2', function(){
+      auth2 = gapi.auth2.init({
+        client_id: '265641923111-2k0798sfrr872m70lagbr612jj4mle63.apps.googleusercontent.com',
+        cookiepolicy: 'single_host_origin',
+        'scope': 'profile email'
+      });
+      attachSignin(document.getElementById('glogin'));
+    });
+  }
+  </script>
+  <script type="text/javascript">
+
+
+    var googleUser = {};
+
+    function attachSignin(element) {
+    auth2.attachClickHandler(element, {},
+        function(googleUser) {
+            checkOAuthedUser(googleUser);
+        }, function(error) {
+          alert(JSON.stringify(error, undefined, 2));
+        });
+    }
+
+    $.post( "../php/cs.php",{ isCorrectLevel: 8},function(data){
+
+      if(data == "Error"){
+        window.location = "http://sherlock.visionceg.in";
+      }
+
+    });
+
+    function checkOAuthedUser(googleUser){
+      document.getElementById("userName").value=googleUser.getBasicProfile().getName();
+      document.getElementById("userMail").value=googleUser.getBasicProfile().getEmail();
+      $("#dummyName").css("visibility","hidden");
+      $("#dummyMail").css("visibility","hidden");
+      $("#glogin").text("{Please wait....}");
+      $.ajax({
+      'url' : 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token='+googleUser.getAuthResponse().id_token,
+      'type' : 'GET',
+      'success' : function(data) {
+          if(data.aud == "265641923111-2k0798sfrr872m70lagbr612jj4mle63.apps.googleusercontent.com"){
+            
+            checkExistingUser(googleUser);
+          }
+          else{
+            alert("Access denied");
+          }
+      },
+      'error' : function(data){
+        alert(data);
+      }
+    });
+    }
+
+
+    function checkExistingUser(googleUser){
+      $.post( "../php/register.php",{ userMail: googleUser.getBasicProfile().getEmail()},function(data){
+          
+          var parsed = JSON.parse(data);
+          if(parsed.result == "RegisteredAlready"){
+            $("#showLogin").css('visibility','hidden');
+            $("#others").removeClass('othersBlurred');
+            $("#login").text("Logout");
+            Materialize.toast('Welcome back '+googleUser.getBasicProfile().getName(), 5000, 'rounded');
+            $("#login").attr("onclick","glogout()");
+            $("#navLogin").attr("onclick", "glogout()");
+            $("#navLogin").text("Logout");
+            $.cookie("v17Name", googleUser.getBasicProfile().getName(), { path: '/' });
+            $.cookie("v17Mail", googleUser.getBasicProfile().getEmail(), { path: '/' });
+            $.cookie("v17Image", googleUser.getBasicProfile().getImageUrl(), { path: '/' });
+            $.post( "../php/cs.php",{ registerUser : "true"},function(data){
+
+              alert(data);
+
+            });
+          }
+          else{
+            $.post( "../php/register.php",{ v17setCookie: "true"},function(data){
+              $.cookie("v17Name", googleUser.getBasicProfile().getName(), { path: '/' });
+              $.cookie("v17Mail", googleUser.getBasicProfile().getEmail(), { path: '/' });
+              $.cookie("v17Image", googleUser.getBasicProfile().getImageUrl(), { path: '/' });
+              $.cookie("v17Register","true", { path: '/' });
+              window.location = "register.html";
+            });
+          }
+          console.log(data);
+      });
+  }
+
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="shortcut icon" href="">
+ <link rel="stylesheet" href="http://anijs.github.io/lib/anicollection/anicollection.css">
+
+
+     <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+
+</head>
+<body>
+
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=265048987037745";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+
+ 
+
+  <div id="others">
+
+
+  <div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+
+        <ul class="left">
+          <li><a href="http://www.annauniv.edu" target="_blank"><img class="circle" src="../images/ceg.png" height="50" width="50" style="margin-top: 5px;"></a></li>
+          <li><a href="http://www.fb.com/cegecea" target="_blank"><img class="circle" src="../images/ecea.png" height="50" width="50" style="margin-top: 5px;"></a></li>
+          <li><strong><a href="http://www.visionceg.in" target="_blank">Vision'17</a></strong></li>
+        </ul>
+         <ul class="right hide-on-med-and-down waves-effect">
+          <li><a id="login"><strong></strong></a></li>
+          <li><a id="save" onclick="save();"><strong>Save</strong></a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+
+
+
+
+
+
+  <ul id="slide-out" class="side-nav">
+    <li><div class="userView">
+      <div class="background">
+        
+      </div>
+      <center><div id="qrcode"></div></center>
+      <h4 id="v17UserName">Please Login</h4>
+    </div></li>
+    <div class="divider"></div>
+    <li class="no-padding">
+      <ul class="collapsible collapsible-accordion">
+        <li class="bold"><a class="collapsible-header waves-effect waves-teal">Events<i class="material-icons">arrow_drop_down</i></a>
+         <div class="collapsible-body">
+          <ul>
+            <li><a href="http://www.visionceg.in/inner/technical.html" target="_blank">Technical</a></li>
+            <li><a href="http://www.visionceg.in/inner/general.html" target="_blank">General</a></li>
+            <li><a href="http://www.visionceg.in/inner/online.html" target="_blank">Online</a></li>
+            <div class="divider"></div>
+          </ul>
+        </div>
+        </li>
+      </ul>
+    </li>
+    <li class="no-padding">
+      <ul class="collapsible collapsible-accordion">
+        <li class="bold"><a class="collapsible-header waves-effect waves-teal">Workshops<i class="material-icons">arrow_drop_down</i></a>
+         <div class="collapsible-body">
+          <ul>
+            
+            <li><a href="http://www.visionceg.in/inner/bw.html" target="_blank">Brainwave controlled robotics</a></li>
+            <li><a href="http://www.visionceg.in/inner/ti.html" target="_blank">TI MSP430</a></li>
+            <div class="divider"></div>
+
+          </ul>
+        </div>
+        </li>
+      </ul>
+    </li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/profile.html" target="_blank">Profile</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="#login" id="navLogin">Login</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="#!" onclick="soon();">Sponsors</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/va.html" target="_blank">Student Ambassador</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/hospitality.html" target="_blank">Hospitality</a></li>
+    <li><a class="waves-effect waves-effect waves-teal" href="http://www.visionceg.in/inner/contacts.html" target="_blank">Contact</a></li>
+    <div class="divider"></div>
+    <li>
+      <div class="fb-like" data-href="https://www.facebook.com/visionceg" data-layout="standard" data-action="like" data-size="small" data-show-faces="true"></div>
+      <div class="fb-share-button" data-href="http://visionceg.in" data-layout="button_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvisionceg.in%2F&amp;src=sdkpreparse">Share</a></div>
+    </li>
+
+  </ul>
+
+  <div class="row" id="namecard">
+    
+      <ul class="tabs grey darken-3">
+        <li class="tab col s3"><a href="#CONTACT" style="color:#FFFFFF ;"><strong>Story</strong></a></li>
+        <li class="tab col s3"><a href="#LONG" style="color:#FFFFFF ;"> <strong>Map</strong></a></li>
+        <li class="tab col s3"><a href="#RULES" style="color:#FFFFFF ;"><strong>Clues</strong></a></li>
+        <li class="tab col s3"><a href="#VENUE" style="color:#FFFFFF ;"><strong>Leaderboard</strong></a></li>
+      </ul>
+
+      <ul class="tabs teal grey darken-2">
+        <li class="tab col s3"><a href="#" onclick="guindy();" style="color:#FFFFFF ;"> <strong>Guindy</strong></a></li>
+        <li class="tab col s3"><a href="#" onclick="villivakam();" style="color:#FFFFFF ;"><strong>Villivakam</strong></a></li>
+        <li class="tab col s3"><a href="#" onclick="marina();" style="color:#FFFFFF ;"><strong>Marina</strong></a></li>
+        <li class="tab col s3"><a  href="#" onclick="perambur();" style="color:#FFFFFF ;"><strong>Perambur</strong></a></li>
+      </ul>
+      
+    </div>
+    
+      <div id="test1" class="col s12 l12">
+      <div class="row" id="LONG">
+        <div class="col s12 m6 l12">
+          <div class="card brown lighten-4">
+            <div class="row">
+              <div id='map' class="col s12 l12"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div id="test2" class="col s12 l12">
+      <div class="row" id="RULES">
+        <div class="col s12 m6 l12">
+          <div class="card   brown lighten-4">
+            <div class="card-content black-text">
+              
+                <div class="col s12 l12">
+      <h1><center>Important Instructions</center></h1>
+      <hr><br><br>
+      <h3>Please read the full instructions..</h4>
+      <h5>
+      1. Chennaiyil Sherlock is an online navigation event , which depicts a crime solving scenario by Sherlock in Chennai. The idea is purely imaginary.<br><br>
+
+      2. Play form laptop / PC to make your experience better.<br><br>
+
+      3. Type your answers in lower case.<br><br>
+
+      4. Mal practices are not allowed.<br><br>
+
+      5. Organisers decision is final.<br><br>
+
+      6. It is a three day event. From Friday to Sunday.<br><br><br>
+      </h5><br><br>
+      <hr><br><br>
+      <h3>How to play...</h4><br>
+      <h5>
+      1. The game consists of two types of levels , a puzzle solving round and a navigation round.<br><br>
+
+      2. In the puzzle round you should solve the puzzle get an answer related to place in chennai, probably.<br><br>
+
+      3. In the navigation round, you would be provided with map where you should find the checkpoint which you got by solving the previous puzzle.<br><br>
+
+      4. The game also has story , which is will be in both the kind of levels. The stroy progresses through levels.<br><br>
+      </h5><br><br>
+      <hr><br><br>
+      <h3>Solving puzzle rounds...</h4><br>
+      <h5>
+        1. Click SUBMIT to submit your answer.<br><br>
+
+        2. Puzzles are given as both images and text .<br><br>
+
+        3. Clues are given at regular intervals.<br><br>
+
+        4. The answers are related to the places in Chennai.<br><br>
+      </h5>
+      <hr><br><br>
+      <h3>Solving navigation rounds...</h4><br>
+      <h5>
+        1. Navigate your answer through the map, use arrow keys for navigation.<br><br>
+
+        2. You will find a MARKER(Red color circle with a blue bar OR  a red colour quadrilateral) on the map which helps you to identify your checkpoint.<br><br>
+
+        3. Once you arrive at the checkpoint , click on the checkpoint to take you to the next puzzle.<br><br>
+
+        4. <b>Click anywhere on the map and select the SAVE button</b>. Next time you log in , the
+        game will resume from the same spot.<br><br>
+
+        5. There will be four places(Guindy, Villivakam, Perambur and Marina) on the top navigation bar, which are closer to the checkpoints in the map. This is to make your navigation easier.<br><br>
+
+        6. <b>Login to start playing.</b><br><br>
+      </h5>
+      <hr><br><br>
+      <h3>Contact:</h4><br>
+      <h5>
+        <center>Bharath : 9524899989</center>
+        <center>Kailash : 9443744404 </center>
+        <center>Aravind : 9500061387</center><br><br>
+        <center>You can directly chat with us using the chat bubble on the bottom right. Happy hunting :-)</center>
+      </h5>
+      <hr><br><br>
+    </div> 
+              
+            </div>
+ 
+          </div>
+        </div>
+      </div>
+      </div>
+        
+      <div id="test3" class="col s12 l12">
+            <div class="row" id="CONTACT">
+        <div class="col s12 m6 l12">
+          <div class="card  brown lighten-4">
+            <div class="card-content black-text">
+              
+
+            <div class="slider fullscreen">
+                <ul class="slides">
+
+
+                  <li>
+                    <img src="../images/sherlock/mor6.png"> <!-- random image -->
+                    <div class="caption right-align">
+                      <h3 class="light grey-text text-lighten-3">Was that too easy Sherlock???</h3>
+                    </div>
+                  </li>
+
+                 <li>
+                    <img src="../images/sherlock/mor6.png"> <!-- random image -->
+                    <div class="caption right-align">
+                      <h3 class="light grey-text text-lighten-3">Lets rise the difficulty a little bit</h3>
+                    </div>
+                  </li>
+
+                   <li>
+                    <img src="../images/sherlock/48.png"> <!-- random image -->
+                    <div class="caption left-align">
+                      <h3 class="light grey-text text-lighten-3">John Watson:</h3>
+                      <h3 class="light grey-text text-lighten-3">Who do you think it is?</h3>
+                    </div>
+                  </li>
+
+
+                  <li>
+                    <img src="../images/sherlock/49.png"> <!-- random image -->
+                    <div class="caption right-align">
+                      <h3 class="light grey-text text-lighten-3">Sherlock:</h3>
+                      <h3 class="light grey-text text-lighten-3">Must be moriorty.</h3>
+                    </div>
+                  </li>
+
+                  <li>
+                    <img src="../images/sherlock/49.png"> <!-- random image -->
+                    <div class="caption right-align">
+                      <h3 class="light grey-text text-lighten-3">Sherlock:</h3>
+                      <h3 class="light grey-text text-lighten-3">Who else could it be?</h3>
+                    </div>
+                  </li>
+
+              
+
+
+
+                </ul>
+              </div>
+
+
+            </div>
+ 
+          </div>
+        </div>
+      </div>
+      </div>
+      <div id="test4" class="col s12 l12">
+            <div class="row" id="VENUE">
+        <div class="col s12 m6 l12">
+          <div class="card   brown lighten-4">
+            <div class="card-content black-text">
+              <span class="card-title"><strong>LEADERBOARD</strong></span>
+              <p align="center" id="v17EventVenue">
+             
+              </p>
+ 
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+      </div>
+
+  <div id="preloader" class="img-responsive"></div> 
+       <div id="showLogin">
+
+  <div class="materialContainer">
+
+
+   <div class="box">
+
+      <div class="title">LOGIN</div>
+
+      <div class="input">
+         <label for="name" id="dummyName" style="{visibility: hidden;}">Name</label>
+         <input type="text" name="name" id="userName" disabled="true">
+         <span class="spin"></span>
+      </div>
+
+      <div class="input">
+         <label for="pass" id="dummyMail" style="{visibility: hidden;}">Email</label>
+         <input type="text" name="pass" id="userMail" disabled="true">
+         <span class="spin"></span>
+      </div>
+
+      <div class="button login">
+         <button id="glogin"><span style="color: black">Sign in with Google</span> <i class="fa fa-check"></i></button>
+      </div>
+
+      <a href="" class="pass-forgot">Close</a>
+
+   </div>
+
+   <div class="overbox">
+      <div class="alt-2"><span class="shape"></span></div>
+   </div>
+
+</div>
+</div>
+
+
+  <script type='text/javascript'>var fc_JS=document.createElement('script');fc_JS.type='text/javascript';fc_JS.src='https://assets1.freshchat.io/production/assets/widget.js?t='+Date.now();(document.body?document.body:document.getElementsByTagName('head')[0]).appendChild(fc_JS); window._fcWidgetCode='VXO8M8NORL';window._fcURL='https://ibharath462.freshchat.io';</script>
+
+
+
+</body>
+
+
+<script type="text/javascript">
+
+
+  if($.cookie("v17Register") && $.cookie("v17Register")=="true"){
+    Materialize.toast('Please register first :-)', 5000, 'rounded');
+    window.location = "register.html";
+  }
+
+
+
+  function soon(){
+    Materialize.toast('Will be updated soon :-)', 5000, 'rounded');
+  }
+
+  $(document).ready(function(){
+      $('.parallax').parallax();
+      $('.slider').slider();
+  });
+
+  
+
+  
+    var qrcode = new QRCode("qrcode", {
+      text: $.cookie("v17Id"),
+      width: 128,
+      height: 128,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+
+    $(window).load(function(){
+      $('#preloader').fadeOut();
+    });
+
+
+    $.post( "../php/register.php",{isLoggedIn : "check"},function(data){
+       
+      data = JSON.parse(data);
+      console.log(data);
+      if(data.result == "true"){
+        $("#login").text("Logout");
+        $("#login").attr("onclick","glogout()");
+        $("#navLogin").text("Logout");
+        $("#navLogin").attr("onclick", "glogout()");
+        $("#v17UserName").html("Welcome " + $.cookie("v17Name"));
+        
+      }
+      else{
+        $("#login").text("Login");
+        $("#login").attr("onclick","");
+        $("#qrcode").html("<img class='img-responsive' src='images/def.jpg' height='100' width='100'></img>");
+      }
+         
+  });
+
+
+    $(".button-collapse").sideNav();
+    //$('.button-collapse').sideNav('show');
+
+    $(function() {
+        $('.material-card > .mc-btn-action , .material-card > .bottom_click').click(function () {
+            var card = $(this).parent('.material-card');
+            var icon = $(this).parent('.material-card').children('.mc-btn-action').children('i');
+            icon.addClass('fa-spin-fast');
+
+            if (card.hasClass('mc-active')) {
+                card.removeClass('mc-active');
+
+                window.setTimeout(function() {
+                    icon
+                        .removeClass('fa-arrow-left')
+                        .removeClass('fa-spin-fast')
+                        .addClass('fa-bars');
+
+                }, 800);
+            } else {
+                card.addClass('mc-active');
+
+                window.setTimeout(function() {
+                    icon
+                        .removeClass('fa-bars')
+                        .removeClass('fa-spin-fast')
+                        .addClass('fa-arrow-left');
+
+                }, 800);
+            }
+        });
+    });
+
+ 
+   
+    $(function() {
+
+   $(".input input").focus(function() {
+
+      $(this).parent(".input").each(function() {
+         $("label", this).css({
+            "line-height": "18px",
+            "font-size": "18px",
+            "font-weight": "100",
+            "top": "0px"
+         })
+         $(".spin", this).css({
+            "width": "100%"
+         })
+      });
+   }).blur(function() {
+      $(".spin").css({
+         "width": "0px"
+      })
+      if ($(this).val() == "") {
+         $(this).parent(".input").each(function() {
+            $("label", this).css({
+               "line-height": "60px",
+               "font-size": "24px",
+               "font-weight": "300",
+               "top": "10px"
+            })
+         });
+
+      }
+   });
+
+
+
+   $(".button").click(function(e) {
+      var pX = e.pageX,
+         pY = e.pageY,
+         oX = parseInt($(this).offset().left),
+         oY = parseInt($(this).offset().top);
+
+      $(this).append('<span class="click-efect x-' + oX + ' y-' + oY + '" style="margin-left:' + (pX - oX) + 'px;margin-top:' + (pY - oY) + 'px;"></span>')
+      $('.x-' + oX + '.y-' + oY + '').animate({
+         "width": "500px",
+         "height": "500px",
+         "top": "-250px",
+         "left": "-250px",
+
+      }, 600);
+   })
+
+   
+  
+
+});
+   
+
+  $("#login").click(function(){
+
+
+        $.post( "../php/register.php",{isLoggedIn : "check"},function(data){
+
+          data = JSON.parse(data)
+          if(data.result == "false"){
+            $("#showLogin").css('visibility','visible');
+            $("#others").addClass('othersBlurred');
+            $("#dummyName").css("visibility","visible");
+            $("#dummyMail").css("visibility","visible");          
+            document.body.scrollTop = document.documentElement.scrollTop = 0; 
+
+          }
+          else{
+            Materialize.toast('A logged session already exists :-)', 5000, 'rounded');
+          }
+
+        });
+  });
+
+
+
+  
+
+
+  
+
+  function glogout(){
+
+      
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        alert("Logged out");
+        $("#showLogin").css('visibility','hidden');
+        $("#login").text("Login");
+        $("#login").attr("onclick","");
+        $("#navLogin").text("Login");
+        //For side nav...
+        location.reload();
+        $("#navLogin").attr("onclick", "");
+        document.getElementById("userName").value="";
+        document.getElementById("userMail").value="";
+        $("#glogin").text("Sign in with Google");
+        $.post( "../php/register.php",{param : "gSignOut"},function(data){
+          window.location = "http://sherlock.visionceg.in";
+        });
+      });
+  }
+
+   $('a[href="#login"]').click(function(){
+
+      $('.button-collapse').sideNav('hide');
+      $.post( "../php/register.php",{isLoggedIn : "check"},function(data){
+
+          data = JSON.parse(data)
+          if(data.result == "false"){
+            $("#showLogin").css('visibility','visible');
+            $("#others").addClass('othersBlurred');
+            $("#navLogin").text("Logout");
+            $("#navLogin").attr("onclick", "glogout()");
+            $("#dummyName").css("visibility","visible");
+            $("#dummyMail").css("visibility","visible");          
+            document.body.scrollTop = document.documentElement.scrollTop = 0; 
+          }
+          else{
+            Materialize.toast('A logged session already exists :-)', 5000, 'rounded');
+          }
+
+        });
+   });
+
+
+   mapboxgl.accessToken = 'pk.eyJ1Ijoicm9iZXJ0c3BhcnRhY3VzIiwiYSI6ImNpeWVlN281czAwcWwzM3NjN3RwYjV0ZzYifQ.AQRDQXubnbNlLT5C2RRTlQ';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/robertspartacus/cizjsc1qf002x2so2vron1isk',
+        center: [$.cookie("lon"),$.cookie("lat")],
+        zoom: 18,
+        bearing: -12,
+        pitch: 60,
+        interactive: false
+    });
+
+    // pixels the map pans when the up or down arrow is clicked
+    var deltaDistance = 120;
+
+    // degrees the map rotates when the left or right arrow is clicked
+    var deltaDegrees = 50;
+
+    function easing(t) {
+        return t * (2 - t);
+    }
+
+    map.on('load', function() {
+        map.getCanvas().focus();
+
+        map.getCanvas().addEventListener('keydown', function(e) {
+            e.preventDefault();
+            if (e.which === 38) { // up
+                map.panBy([0, -deltaDistance], {
+                    easing: easing
+                });
+            } else if (e.which === 40) { // down
+                map.panBy([0, deltaDistance], {
+                    easing: easing
+                });
+            } else if (e.which === 37) { // left
+                map.easeTo({
+                    bearing: map.getBearing() - deltaDegrees,
+                    easing: easing
+                });
+            } else if (e.which === 39) { // right
+                map.easeTo({
+                    bearing: map.getBearing() + deltaDegrees,
+                    easing: easing
+                });
+            }
+        }, true);
+    });
+
+    map.on('load', function () {
+
+     
+  });
+
+
+// When a click event occurs near a place, open a popup at the location of
+// the feature, with description HTML from its properties.
+map.on('click', function (e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['v17Oragadam'] });
+
+    if (!features.length) {
+        return;
+    }
+
+    var feature = features[0];
+
+
+    $.cookie("lat", (e.lngLat).lat , { path: '/' });
+    $.cookie("lng", (e.lngLat).lng , { path: '/' });
+
+    save();
+
+    var d = new Date();
+
+    $('#preloader').fadeIn();
+
+
+    
+
+    $.post( "../php/cs.php",{nextPuzzle : "yes"},function(data){
+      window.location = ""+data;
+    });
+
+
+
+});
+
+map.on('mousemove', function (e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['v17Oragadam'] });
+    map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+});
+
+function guindy(){
+
+  var start = [80.213,13.008];
+
+   map.flyTo({
+        
+        center: start,
+        zoom: 18,
+        bearing: -12,
+        speed: 3,
+        curve: 1, 
+        easing: function (t) {
+            return t;
+        }
+    });
+
+}
+
+function perambur(){
+
+  var start = [80.249,13.108];
+
+   map.flyTo({
+        
+        center: start,
+        zoom: 18,
+        bearing: -12,
+        speed: 3,
+        curve: 1, 
+        easing: function (t) {
+            return t;
+        }
+    });
+
+}
+
+function villivakam(){
+
+  var start = [80.214,13.108];
+
+   map.flyTo({
+        
+        center: start,
+        zoom: 18,
+        bearing: -12,
+        speed: 3,
+        curve: 1, 
+        easing: function (t) {
+            return t;
+        }
+    });
+
+}
+
+function marina(){
+
+  var start = [80.285,13.054];
+
+   map.flyTo({
+        
+        center: start,
+        zoom: 18,
+        bearing: -12,
+        speed: 3,
+        curve: 1, 
+        easing: function (t) {
+            return t;
+        }
+    });
+
+}
+
+map.on('click', function (e) {
+    $.cookie("lat", (e.lngLat).lat , { path: '/' });
+    $.cookie("lng", (e.lngLat).lng , { path: '/' });
+});
+
+function save(){
+
+  if($.cookie("v17Id")){
+
+    $.post( "../php/cs.php",{save : "yes"},function(data){
+
+      if(data == "Saved!"){
+
+        Materialize.toast('Progress saved successfully... :-)', 5000, 'rounded');
+
+
+      }
+
+      else{
+
+        Materialize.toast(data, 5000, 'rounded');
+
+      }
+
+    });
+
+  }
+
+  else{
+
+    Materialize.toast('Please login to save :-)', 5000, 'rounded');
+
+  }
+
+}
+
+
+</script>
+</html>

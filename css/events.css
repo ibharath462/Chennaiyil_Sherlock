@@ -1,0 +1,31 @@
+body{
+	background-color: #bcaaa4;
+}
+div.visiontag{
+		position:relative;
+		width:auto;
+		height:70px;
+		border: 2px  solid blue;
+
+}
+div.card{
+	width:auto;
+	margin-left: 0px;
+	height:500px;
+}
+
+#subbutton{
+	position:relative;
+	margin-top:450px;
+	margin-right:25px; 
+	float:right;
+}
+
+
+
+
+@media only screen
+and (max-width : 1000px) {
+	div.card { height : 1000px;}
+}
+
